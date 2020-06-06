@@ -42,7 +42,7 @@ struct Options {
     out_dir: Option<PathBuf>,
 
     /// If this flag is supplied, the source `_tex.sc` files are deleted after extracting.
-    #[structopt(short = "d")]
+    #[structopt(short = "d", long = "delete")]
     delete: bool,
 }
 
