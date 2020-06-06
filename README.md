@@ -21,41 +21,59 @@ This tool extracts sprites about **10** times faster than the Python implemenati
 
 ## Installation
 
-To use this tool, all you'll need is [Rust (2018 version)](https://www.rust-lang.org/tools/install) and [the tool's source code](https://codeload.github.com/AriusX7/sc-extract/zip/master). Rust is available for Windows, Mac and Linux, among others operating systems. Clicking on the first link above will take you to Rust's installation page. The second link will download the source code of this tool.
+To use this tool, all you'll need is [Rust (2018 version)](https://www.rust-lang.org/tools/install) and the tool itself. Rust is available for Windows, Mac and Linux, among others operating systems. Clicking on the above link above will take you to Rust's installation page.
+
+Once you've installed Rust, you can install the sc_extract tool in one of the following two ways:
+
+## Using `cargo install` (Recommended)
+
+sc_extract is available on [crates.io](https://crates.io/crates/sc_extract). You can install and build this tool by simply using `cargo install sc_extract` command from the terminal. The installation process will take a few minutes to build all dependencies, but once that's done, the tool will work very, very fast.
+
+It will add this tool to the shell path automatically, allowing you to use the tool from *any* directory.
+
+## Building From Source
+
+You can download this tool's [source code](https://codeload.github.com/AriusX7/sc-extract/zip/master) and build it yourself by using `cargo build --release` command. You need to `cd` into this tool's directory before executing that command.
+
+Each time you want to use this tool, you will have to `cd` into the tool's directory, and run `cargo run --release` command.
+
+**Note:** In the below example commands, it will be assumed that you have installed the tool using `cargo install`. If you installed from the source, you will have to replace `sc_extract` with `cargo run --release` in all commands. You will also have to `cd` into the tool's directory.
+
+Choosing the option to build the tool also affects updating. See [Updating](#updating) section for more info.
 
 ## Usage
 
 You will need the `_tex.sc` or `.csv` files of the Supercell game you wish to extract. You can get the files by downloading the APK of the game, changing the extension to `.zip`, unzipping it and navigating to `/assets/sc` (_tex.sc files), `/assets/csv_logic` (csv files) or `csv_client` (csv files) folder inside the unzipped folder.
 
-Once you have Rust, this tool and _tex.sc or .csv files, you can begin extracting with just these two commands:
+Once you have Rust, this tool and _tex.sc or .csv files, you can begin extracting with just a single command:
 
-Changing `current_directory` to this tool's directory:
+`sc_extract path_to_file_or_directory`
 
-`cd path_to_this_tool`
+`path_to_file_or_directory` must be a valid path pointing to the sc or csv files directory or just an individual file.
 
-Running the tool:
-
-`cargo run --release path_to_file_or_directory`
-
-Running the above command for the first time will take quite long. Rust needs to build up all the dependencies and it can take a couple of minutes. Subsequent uses of the tool will be very, very quick.
-
-If you'd like to build the tool prior to extracting the files, you can run `cargo build --release` in the tool's directory. Once again, building will take a couple of minutes, but running the tool in future will be very fast.
+If you installed the tool using the source code, you may want to build the tool and all the dependencies prior to extracting the files. You can do so by run the `cargo build --release` command in the tool's directory. Building will take a couple of minutes, but running the tool in future will be very fast.
 
 ### Options
 
 The tool has quite a few options to fine tune the extraction process. The following is the command signature of the tool:
 
-```cargo run --release file_or_directory_path [-o | --out] [-d | --delete]```
+```sc_extract file_or_directory_path [-o | --out] [-d | --delete]```
 
 If you supply the path to a directory, all the `_tex.sc` and `.csv` files inside the directory will be extracted. If you supply the path to a single file, only that file will be extracted.
 
 `--out` or `-o` flag tells the tool where to save the extracted files. It will create a directory called `extracts` in the directory specified by this flag. All the extracted files will be saved inside the `extracts` directory.
 
-Example Usage: `cargo run --release path_to_sc_folder --out path_to_out_directory`
+Example Usage: `sc_extract path_to_sc_folder --out path_to_out_directory`
 
 `--delete` or `-d` flag tells the tool whether to delete the source `_tex.sc` or `.csv` files after the extraction. If this flag is passed, the source files are deleted after extraction.
 
-Example Usage: `cargo run --release path_to_sc_folder --delete`
+Example Usage: `sc_extract path_to_sc_folder --delete`
+
+## Updating
+
+If you installed the tool using `cargo install`, you can update the tool by simply reusing the `cargo install sc_extract` command. If it fails to update the tool, you can force it by adding the `--force` flag, like so: `cargo install sc_extract --force`.
+
+If you installed using the source code, you will have to repeat the process outlined in [Building From Source](#building-from-source) section using the new source code.
 
 ## License
 
