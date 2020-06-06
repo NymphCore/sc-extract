@@ -5,6 +5,7 @@ authors = ["AriusX7 <icyligii@gmail.com>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
+description = "A command-line tool to extract graphics and csv files from Supercell games."
 homepage = "https://github.com/AriusX7/sc-extract"
 repository = "https://github.com/AriusX7/sc-extract"
 keywords = ["supercell", "brawl stars", "extraction", ".sc", "_tex.sc"]
