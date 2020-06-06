@@ -8,7 +8,7 @@ readme = "README.md"
 description = "A command-line tool to extract graphics and csv files from Supercell games."
 homepage = "https://github.com/AriusX7/sc-extract"
 repository = "https://github.com/AriusX7/sc-extract"
-keywords = ["supercell", "brawlstars", "extraction", ".sc", "_tex.sc"]
+keywords = ["supercell", "brawlstars", "extraction", "sc", "clashroyale", "clashofclans", "coc"]
 categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
