@@ -125,7 +125,7 @@ fn adjust_pixels(img: &mut RgbaImage, pixels: Vec<[u8; 4]>, height: u16, width: 
                 h += 1;
             }
         }
-    };
+    }
 }
 
 /// Processes compressed, raw `_tex.sc` file data.
@@ -215,7 +215,8 @@ pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path) -> Result<(), Decomp
             initial_path.to_str().unwrap(),
             "_".repeat(pic_count)
         );
-        img.save(path).unwrap_or_else(|_| { panic!("Failed to save image!".red()) });
+        img.save(path)
+            .unwrap_or_else(|_| panic!("Failed to save image!".red()));
 
         pic_count += 1;
     }

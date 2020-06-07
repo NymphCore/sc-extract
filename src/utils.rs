@@ -136,16 +136,19 @@ impl Reader {
     }
 }
 
-/// Decompress given raw `.tex_sc` or `.csv` data.
+/// Decompress proper `.tex_sc` or `.csv` data.
 ///
 /// Before decompressing the data using `LZMA` decompression,
 /// four `\x00` bytes are added to `raw_data` after the eigth index.
-/// A `Curson` containing the transformed raw data is returned, wrapped up in `Ok`.
+/// A `Cursor` containing the transformed raw data is returned, wrapped up in `Ok`.
+///
+/// Supercell game `_tex.sc` files require the header to be removed before decompression.
 ///
 /// If the decompression fails due to any reason, `DecompressionError` is raised.
-/// 
+///
 /// ## Arguments
-/// * `raw_data`: The raw `_tex.sc` or `.csv` file data.
+///
+/// * `raw_data`: Proper `_tex.sc` or `.csv` raw file data.
 pub(crate) fn decompress(raw_data: &[u8]) -> Result<Cursor<Vec<u8>>, DecompressionError> {
     let mut data = raw_data[0..9].to_vec();
 

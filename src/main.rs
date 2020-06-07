@@ -24,8 +24,9 @@ use colored::Colorize;
 use rayon::prelude::*;
 use sc_extract::{csv::process_csv, tex::process_sc};
 use std::{
-    fs, path::PathBuf,
-    sync::atomic::{AtomicBool, Ordering}
+    fs,
+    path::PathBuf,
+    sync::atomic::{AtomicBool, Ordering},
 };
 use structopt::StructOpt;
 
@@ -46,14 +47,9 @@ struct Options {
     delete: bool,
 }
 
-/// Checks if file path ends with `_tex.sc`.
-fn is_tex_sc_file(path: &PathBuf) -> bool {
-    path.to_str().unwrap().ends_with("_tex.sc")
-}
-
-/// Checks if file path ends with `.csv`.
-fn is_csv_file(path: &PathBuf) -> bool {
-    path.to_str().unwrap().ends_with(".csv")
+/// Checks if file path ends with `_tex.sc` or `.csv`.
+fn is_valid_file(path: &PathBuf) -> bool {
+    path.to_str().unwrap().ends_with("_tex.sc") || path.to_str().unwrap().ends_with(".csv")
 }
 
 /// Deletes the file with given path.
@@ -69,7 +65,7 @@ fn delete_file(path: &PathBuf) {
     };
 }
 
-/// Checks if data has correct header and returns Option<header_type>, 
+/// Checks if data has correct header and returns Option<header_type>,
 /// where header_type can be "sc" or "csv", depending on the data.
 ///
 /// The data passed here must be compressed/raw.
@@ -80,7 +76,7 @@ fn check_header(data: &[u8]) -> Option<&'static str> {
         if data[0] == 83 {
             Some("sc")
         } else if data[..2] == [93, 0] {
-                Some("csv")
+            Some("csv")
         } else {
             None
         }
@@ -111,7 +107,8 @@ fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool) -> Result<(), (
                 format!(
                     "File has `_tex.sc` or `.csv` extension but is actually of unknown type: {}",
                     path.to_str().unwrap()
-                ).red()
+                )
+                .red()
             );
             return Err(());
         }
@@ -159,7 +156,8 @@ fn main() {
                     format!(
                         "Failed to read contents of {} directory/folder.",
                         opts.path.to_str().unwrap().red()
-                    ).red()
+                    )
+                    .red()
                 );
                 std::process::exit(1);
             }
@@ -170,18 +168,21 @@ fn main() {
         }
         entries.into_par_iter().for_each(|entry| {
             let path = entry.unwrap().path();
-            if is_tex_sc_file(&path) || is_csv_file(&path) {
+            if is_valid_file(&path) {
                 if let Ok(_) = process_file(&path, &out_dir, opts.delete) {
-                        found_one.compare_and_swap(false, true, Ordering::AcqRel);
+                    found_one.compare_and_swap(false, true, Ordering::AcqRel);
                 }
             }
         });
         if !found_one.into_inner() {
-            println!("{}", "No `_tex.sc` or `.csv` file in the given directory!".red());
+            println!(
+                "{}",
+                "No `_tex.sc` or `.csv` file in the given directory!".red()
+            );
             std::process::exit(1);
         }
     } else if opts.path.is_file() {
-        if is_tex_sc_file(&opts.path) || is_csv_file(&opts.path) {
+        if is_valid_file(&opts.path) {
             process_file(&opts.path, &out_dir, opts.delete).unwrap_or(());
         } else {
             println!(
