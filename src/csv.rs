@@ -24,7 +24,6 @@ use super::{errors::DecompressionError, utils::decompress};
 use colored::Colorize;
 use std::{fs, path::Path};
 
-
 /// Process raw, encoded `.csv` file data.
 ///
 /// The data passed here must be **compressed/raw**. Passing uncompressed or decoded
