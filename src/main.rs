@@ -32,8 +32,8 @@ use structopt::StructOpt;
 
 #[derive(StructOpt)]
 struct Options {
-    /// The path to directory containing `_tex.sc` files or
-    /// path to an `_tex.sc` file.
+    /// The path to directory containing `_tex.sc` or `.csv` files or
+    /// path to an `_tex.sc` or `.csv` file.
     #[structopt(parse(from_os_str))]
     path: PathBuf,
 
@@ -42,7 +42,7 @@ struct Options {
     #[structopt(parse(from_os_str), short = "o", long = "out")]
     out_dir: Option<PathBuf>,
 
-    /// If this flag is supplied, the source `_tex.sc` files are deleted after extracting.
+    /// If this flag is supplied, the source `_tex.sc` or `.csv` files are deleted after extracting.
     #[structopt(short = "d", long = "delete")]
     delete: bool,
 }
