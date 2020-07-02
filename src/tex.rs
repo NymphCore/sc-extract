@@ -31,7 +31,7 @@ use std::path::Path;
 /// Reads some data from the stream and returns appropriate pixel data.
 ///
 /// The bitwise transformations depend on the type of the pixel. One of the following
-/// types is valid: `0, 1, 2, 3, 4, 6, 10`. Generally, you should not get type `10` pixels.
+/// types is valid: `0, 1, 2, 3, 4, 6, 10`.
 ///
 /// If `pixel_type` is not one of the above, `UnknownPixel` is raised. Otherwise, an array
 /// of four `u8`s is returned, wrapped around by `Ok`.
@@ -73,11 +73,9 @@ fn convert_pixel(reader: &mut Reader, pixel_type: u8) -> Result<[u8; 4], Unknown
             Ok([
                 (((pixel >> 11) & 0x1F) << 3) as u8,
                 (((pixel >> 5) & 0x3F) << 2) as u8,
-                (((pixel >> 1) & 0x1F) << 3) as u8,
-                // It is sent because we need 4 values.
-                // In practice, you would most likely not
-                // encounter this type of file.
-                ((pixel & 0xFF) << 7) as u8,
+                ((pixel & 0x1F) << 3) as u8,
+                // Alpha channel must always be 255 for type 4.
+                255
             ])
         }
         // LA88
@@ -201,6 +199,7 @@ pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path) -> Result<(), Decomp
                     }
                 };
                 pixels.push([one, two, three, four]);
+                // img.put_pix
                 img.put_pixel(x as u32, y as u32, Rgba([one, two, three, four]));
             }
         }

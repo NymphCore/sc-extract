@@ -73,7 +73,6 @@ branches:
   only:
     # Release tags
     - /^v\d+\.\d+\.\d+.*$/
-    - release
 
 notifications:
   - provider: Email

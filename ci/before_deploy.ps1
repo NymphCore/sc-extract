@@ -11,9 +11,9 @@ Set-Location $STAGE
 $ZIP = "$SRC_DIR\$($env:CRATE_NAME)-$($env:APPVEYOR_REPO_TAG_NAME)-$($env:TARGET).zip"
 
 # TODO Update this to package the right artifacts
-Copy-Item "$SRC_DIR\target\$($env:TARGET)\release\$(env:CRATE_NAME).exe" '.\'
-Copy-Item LICENSE '.\'
-Copy-Item README.md '.\'
+Copy-Item "$SRC_DIR\target\$($env:TARGET)\release\$($env:CRATE_NAME).exe" '.\'
+Copy-Item "$SRC_DIR\LICENSE" '.\'
+Copy-Item "$SRC_DIR\README.md" '.\'
 
 7z a "$ZIP" *
 
