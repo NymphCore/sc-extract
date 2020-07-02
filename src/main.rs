@@ -70,16 +70,14 @@ fn delete_file(path: &PathBuf) {
 ///
 /// The data passed here must be compressed/raw.
 fn check_header(data: &[u8]) -> Option<&'static str> {
-    if data.len() == 0 {
+    if data.is_empty() {
         None
+    } else if data[0] == 83 {
+        Some("sc")
+    } else if data[..2] == [93, 0] {
+        Some("csv")
     } else {
-        if data[0] == 83 {
-            Some("sc")
-        } else if data[..2] == [93, 0] {
-            Some("csv")
-        } else {
-            None
-        }
+        None
     }
 }
 
@@ -88,6 +86,8 @@ fn check_header(data: &[u8]) -> Option<&'static str> {
 /// It automatically detects file type (`_tex.sc` or `.csv`) and processes them appropriately.
 /// If processing a file fails, formatted error messages gets printed on `stdout`.
 /// In case of lack of permissions, the process may panic.
+///
+/// ## Arguments
 ///
 /// * `path`: Reference to the file path.
 /// * `out_dir`: Path to directory where `extracts` folder is created to
@@ -168,10 +168,8 @@ fn main() {
         }
         entries.into_par_iter().for_each(|entry| {
             let path = entry.unwrap().path();
-            if is_valid_file(&path) {
-                if let Ok(_) = process_file(&path, &out_dir, opts.delete) {
-                    found_one.compare_and_swap(false, true, Ordering::AcqRel);
-                }
+            if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete).is_ok() {
+                found_one.compare_and_swap(false, true, Ordering::AcqRel);
             }
         });
         if !found_one.into_inner() {
