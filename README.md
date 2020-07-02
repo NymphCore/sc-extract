@@ -43,7 +43,7 @@ sc_extract is available on [crates.io](https://crates.io/crates/sc_extract). You
 
 It will add this tool to the shell path automatically, allowing you to use the tool from *any* directory.
 
-## Building From Source
+### Building From Source
 
 You can download this tool's [source code](https://codeload.github.com/AriusX7/sc-extract/zip/master) and build it yourself by using `cargo build --release` command. You need to `cd` into this tool's directory before executing that command.
 
