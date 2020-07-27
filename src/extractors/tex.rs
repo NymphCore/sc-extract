@@ -1,26 +1,4 @@
-// MIT License
-
-// Copyright (c) 2020 AriusX7
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-use super::{
+use crate::{
     errors::{DecompressionError, UnknownPixel},
     utils::{decompress, Reader},
 };
@@ -75,7 +53,7 @@ fn convert_pixel(reader: &mut Reader, pixel_type: u8) -> Result<[u8; 4], Unknown
                 (((pixel >> 5) & 0x3F) << 2) as u8,
                 ((pixel & 0x1F) << 3) as u8,
                 // Alpha channel must always be 255 for type 4.
-                255
+                255,
             ])
         }
         // LA88
@@ -144,7 +122,12 @@ fn adjust_pixels(img: &mut RgbaImage, pixels: Vec<[u8; 4]>, height: u16, width: 
 /// * `path`: Path to the `_tex.sc` file. It is used to get file name.
 /// * `out_dir`: Directory to store extracted images.
 /// * `parallelize`: Whether files are processed in parallel or not.
-pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path, parallelize: bool) -> Result<(), DecompressionError> {
+pub fn process_sc(
+    data: &[u8],
+    path: &Path,
+    out_dir: &Path,
+    parallelize: bool,
+) -> Result<(), DecompressionError> {
     if data.len() < 35 {
         return Err(DecompressionError("Size of file is too small:".to_string()));
     }

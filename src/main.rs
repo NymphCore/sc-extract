@@ -1,28 +1,6 @@
-// MIT License
-
-// Copyright (c) 2020 AriusX7
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 use colored::Colorize;
 use rayon::prelude::*;
-use sc_extract::{csv::process_csv, tex::process_sc};
+use sc_extract::{process_csv, process_sc};
 use std::{
     fs,
     path::PathBuf,
@@ -97,7 +75,12 @@ fn check_header(data: &[u8]) -> Option<&'static str> {
 /// * `out_dir`: Path to directory where `extracts` folder is created to store extracts.
 /// * `delete`: Whether to delete file after extraction or not.
 /// * `parallelize`: Whether files are processed in parallel or not.
-fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool, parallelize: bool) -> Result<(), ()> {
+fn process_file(
+    path: &PathBuf,
+    out_dir: &PathBuf,
+    delete: bool,
+    parallelize: bool,
+) -> Result<(), ()> {
     let data = fs::read(&path).unwrap();
 
     let process = check_header(data.as_slice());
@@ -173,14 +156,16 @@ fn main() {
         if opts.parallelize {
             entries.into_par_iter().for_each(|entry| {
                 let path = entry.unwrap().path();
-                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, true).is_ok() {
+                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, true).is_ok()
+                {
                     found_one.compare_and_swap(false, true, Ordering::AcqRel);
                 }
             })
         } else {
             for entry in entries {
                 let path = entry.unwrap().path();
-                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, false).is_ok() {
+                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, false).is_ok()
+                {
                     found_one.compare_and_swap(false, true, Ordering::AcqRel);
                 }
             }
@@ -188,7 +173,9 @@ fn main() {
         if !found_one.into_inner() {
             println!(
                 "{}",
-                "No valid `_tex.sc` or `.csv` file in the given directory!".red().bold()
+                "No valid `_tex.sc` or `.csv` file in the given directory!"
+                    .red()
+                    .bold()
             );
             std::process::exit(1);
         }
@@ -200,7 +187,9 @@ fn main() {
         } else {
             println!(
                 "{}",
-                "Given file doesn't appear to be an `_tex.sc` or `.csv` file!".red().bold()
+                "Given file doesn't appear to be an `_tex.sc` or `.csv` file!"
+                    .red()
+                    .bold()
             );
             std::process::exit(1);
         }
