@@ -36,7 +36,9 @@ use std::{fs, path::Path};
 /// * `data`: Raw `.csv` file data.
 /// * `path`: Path to the `.csv` file. It is used to get file name.
 /// * `out_dir`: Directory to store extracted csv files.
-pub fn process_csv(data: &[u8], path: &Path, out_dir: &Path) -> Result<(), DecompressionError> {
+/// * `_parallelize`: Whether files are processed in parallel or not.
+///   Has no effect on this function.
+pub fn process_csv(data: &[u8], path: &Path, out_dir: &Path, _parallelize: bool) -> Result<(), DecompressionError> {
     let decompressed = match decompress(data) {
         Ok(c) => c,
         Err(e) => return Err(e),

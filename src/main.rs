@@ -45,6 +45,10 @@ struct Options {
     /// If this flag is supplied, the source `_tex.sc` or `.csv` files are deleted after extracting.
     #[structopt(short = "d", long = "delete")]
     delete: bool,
+
+    /// Extracts all images in parallel. It makes the process faster.
+    #[structopt(short = "p", long = "parallelize")]
+    parallelize: bool,
 }
 
 /// Checks if file path ends with `_tex.sc` or `.csv`.
@@ -90,10 +94,10 @@ fn check_header(data: &[u8]) -> Option<&'static str> {
 /// ## Arguments
 ///
 /// * `path`: Reference to the file path.
-/// * `out_dir`: Path to directory where `extracts` folder is created to
-///     store extracts.
+/// * `out_dir`: Path to directory where `extracts` folder is created to store extracts.
 /// * `delete`: Whether to delete file after extraction or not.
-fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool) -> Result<(), ()> {
+/// * `parallelize`: Whether files are processed in parallel or not.
+fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool, parallelize: bool) -> Result<(), ()> {
     let data = fs::read(&path).unwrap();
 
     let process = check_header(data.as_slice());
@@ -106,15 +110,15 @@ fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool) -> Result<(), (
                 "{}",
                 format!(
                     "File has `_tex.sc` or `.csv` extension but is actually of unknown type: {}",
-                    path.to_str().unwrap()
+                    path.to_str().unwrap().bold()
                 )
-                .red()
+                .yellow()
             );
             return Err(());
         }
     };
 
-    match process_fn(&data, &path, &out_dir) {
+    match process_fn(&data, &path, &out_dir, parallelize) {
         Ok(_) => (),
         Err(e) => println!("\n{} {}", e.0.red(), path.to_str().unwrap().red()),
     };
@@ -127,7 +131,7 @@ fn process_file(path: &PathBuf, out_dir: &PathBuf, delete: bool) -> Result<(), (
 }
 
 fn main() {
-    let opts = Options::from_args();
+    let opts: Options = Options::from_args();
 
     let out_dir = match &opts.out_dir {
         Some(p) => p.join("extracts"),
@@ -166,26 +170,37 @@ fn main() {
         for entry in dir_entries {
             entries.push(entry);
         }
-        entries.into_par_iter().for_each(|entry| {
-            let path = entry.unwrap().path();
-            if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete).is_ok() {
-                found_one.compare_and_swap(false, true, Ordering::AcqRel);
+        if opts.parallelize {
+            entries.into_par_iter().for_each(|entry| {
+                let path = entry.unwrap().path();
+                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, true).is_ok() {
+                    found_one.compare_and_swap(false, true, Ordering::AcqRel);
+                }
+            })
+        } else {
+            for entry in entries {
+                let path = entry.unwrap().path();
+                if is_valid_file(&path) && process_file(&path, &out_dir, opts.delete, false).is_ok() {
+                    found_one.compare_and_swap(false, true, Ordering::AcqRel);
+                }
             }
-        });
+        }
         if !found_one.into_inner() {
             println!(
                 "{}",
-                "No `_tex.sc` or `.csv` file in the given directory!".red()
+                "No valid `_tex.sc` or `.csv` file in the given directory!".red().bold()
             );
             std::process::exit(1);
         }
     } else if opts.path.is_file() {
         if is_valid_file(&opts.path) {
-            process_file(&opts.path, &out_dir, opts.delete).unwrap_or(());
+            if process_file(&opts.path, &out_dir, opts.delete, false).is_err() {
+                return;
+            }
         } else {
             println!(
                 "{}",
-                "Given file doesn't appear to be an `_tex.sc` or `.csv` file!".red()
+                "Given file doesn't appear to be an `_tex.sc` or `.csv` file!".red().bold()
             );
             std::process::exit(1);
         }

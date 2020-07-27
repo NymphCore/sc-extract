@@ -143,7 +143,8 @@ fn adjust_pixels(img: &mut RgbaImage, pixels: Vec<[u8; 4]>, height: u16, width: 
 /// * `data`: Raw `_tex.sc` file data.
 /// * `path`: Path to the `_tex.sc` file. It is used to get file name.
 /// * `out_dir`: Directory to store extracted images.
-pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path) -> Result<(), DecompressionError> {
+/// * `parallelize`: Whether files are processed in parallel or not.
+pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path, parallelize: bool) -> Result<(), DecompressionError> {
     if data.len() < 35 {
         return Err(DecompressionError("Size of file is too small:".to_string()));
     }
@@ -160,10 +161,12 @@ pub fn process_sc(data: &[u8], path: &Path, out_dir: &Path) -> Result<(), Decomp
 
     let file_name = path.file_stem().unwrap().to_str().unwrap();
 
-    println!(
-        "\nExtracting {} image(s)...",
-        path.file_name().unwrap().to_str().unwrap().green().bold()
-    );
+    if !parallelize {
+        println!(
+            "\nExtracting {} image(s)...",
+            path.file_name().unwrap().to_str().unwrap().green().bold()
+        );
+    }
 
     'main: while reader.len() > 0 {
         let file_type = reader.read_byte();
