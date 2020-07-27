@@ -5,7 +5,7 @@
 This tool is simply intended to get high quality graphics and data from the files. It is in no way an attempt to:
 
 - modify the game in any way
-- create a clone or any other game based on Supercell game
+- create a clone or any other game based on Supercell games
 - make profit
 
 ## About The Tool
