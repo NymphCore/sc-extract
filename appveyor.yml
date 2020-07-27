@@ -10,6 +10,8 @@ environment:
     # TODO Update this to match the name of your project.
     CRATE_NAME: sc_extract
 
+    CARGO_PROFILE_RELEASE_LTO: true
+
   # TODO These are all the build jobs. Adjust as necessary. Comment out what you
   # don't need
   matrix:
